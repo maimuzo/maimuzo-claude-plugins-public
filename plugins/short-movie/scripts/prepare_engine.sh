@@ -19,20 +19,27 @@ if [ -f "$TARGET/.ready" ]; then
 fi
 
 # ロック。mkdir で取り、中に自分の pid を書く。
-# pid の書かれたロックで、その pid が動いていなければ取り残しとして消す。
+# pid の書かれたロックで、その pid が動いていなければ取り残しとみなす。
 # pid がまだ書かれていないロックは、作られて2分たつまでは取り残しとみなさない（書く途中かもしれないため）。
+# 取り残しは、まず自分だけの名前へ mv で退けてから消す。mv は1つしか成功しないので、
+# 2つが同時に片付けても、ほかが取り直したばかりのロックを消さない。
 # 最大10分待ち、過ぎたら止まる
 waited=0
 until mkdir "$LOCK" 2>/dev/null; do
   pid="$(cat "$LOCK/pid" 2>/dev/null || true)"
-  if [ -n "$pid" ] && ! kill -0 "$pid" 2>/dev/null; then
-    echo "取り残しのロックを片付けます（pid $pid は動いていません）" >&2
-    rm -rf -- "$LOCK"
-    continue
-  fi
-  if [ -z "$pid" ] && [ -n "$(find "$LOCK" -maxdepth 0 -mmin +2 2>/dev/null)" ]; then
-    echo "pid の無い古いロックを片付けます" >&2
-    rm -rf -- "$LOCK"
+  stale=0
+  if [ -n "$pid" ] && ! kill -0 "$pid" 2>/dev/null; then stale=1; fi
+  if [ -z "$pid" ] && [ -n "$(find "$LOCK" -maxdepth 0 -mmin +2 2>/dev/null)" ]; then stale=1; fi
+  if [ "$stale" = 1 ]; then
+    if mv "$LOCK" "$LOCK.stale.$$" 2>/dev/null; then
+      # 退けたあとで中の pid を読み直し、片付けると決めたときと同じロックかを確かめる
+      if [ "$(cat "$LOCK.stale.$$/pid" 2>/dev/null || true)" = "$pid" ]; then
+        echo "取り残しのロックを片付けます（pid ${pid:-無し}）" >&2
+        rm -rf -- "$LOCK.stale.$$"
+      else
+        mv "$LOCK.stale.$$" "$LOCK" 2>/dev/null || rm -rf -- "$LOCK.stale.$$"
+      fi
+    fi
     continue
   fi
   if [ "$waited" -ge 600 ]; then
@@ -60,13 +67,26 @@ echo "npm ci を流します（初回は数分かかります）" >&2
 echo "Chrome Headless Shell を取得します" >&2
 (cd "$TMP" && npx remotion browser ensure >&2)
 touch "$TMP/.ready"
-rm -rf -- "$TARGET"
-mv "$TMP" "$TARGET"
+if [ -e "$TARGET" ]; then
+  # 既にあるなら（.ready の無い作りかけでも）入れ替えない。使用中のものを消さないため。作った方を捨てる
+  if [ -f "$TARGET/.ready" ]; then
+    rm -rf -- "$TMP"
+  else
+    mv "$TARGET" "$ROOT/.broken-$VER-$$" && mv "$TMP" "$TARGET"
+  fi
+else
+  mv "$TMP" "$TARGET"
+fi
 
-# 使っていない古い版を消す。作業場所（work/）の node_modules の symlink が指している版は、使用中として残す
+# 落ちた準備の跡（.tmp-*・.broken-*・.lock.stale.*）で、1時間より古いものを消す
+find "$ROOT" -maxdepth 1 \( -name '.tmp-*' -o -name '.broken-*' -o -name '.lock.stale.*' \) -mmin +60 -exec rm -rf -- {} + 2>/dev/null || true
+
+# 使っていない古い版を消す。作業場所（work/）の node_modules の symlink が指している版と、
+# 用意してから7日たっていない版は残す（ほかのセッションが古い版で書き出し始めたところかもしれないため）
 for d in "$ROOT"/*/; do
   d="${d%/}"
   [ "$d" = "$TARGET" ] && continue
+  [ -n "$(find "$d/.ready" -mtime +7 2>/dev/null)" ] || continue
   used=0
   if [ -d "$DATA/work" ]; then
     while IFS= read -r link; do

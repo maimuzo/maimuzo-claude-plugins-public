@@ -20,6 +20,7 @@ need ffprobe "ffmpeg と一緒に入る"
 need uv     "https://docs.astral.sh/uv/ の手順（macOS なら brew install uv）"
 need git    "macOS なら xcode-select --install、Debian 系なら sudo apt install git"
 need python3 "macOS なら xcode-select --install、Debian 系なら sudo apt install python3"
+need shasum "macOS には入っている。Debian 系なら sudo apt install perl"
 if command -v codex >/dev/null 2>&1; then
   printf '有る: codex（%s）\n' "$(codex --version 2>&1 | head -n 1)"
 else

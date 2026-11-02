@@ -25,7 +25,7 @@ argument-hint: <回のid>
 3. 共通の効果音を作る（初回だけ）。
    - `<plugin>/scripts/make_sfx.py` を `<sm>/materials/sfx/make_sfx.py` へ写し、写しを流す: `uv run --no-project --python 3.12 --with numpy==2.5.4 python -I <sm>/materials/sfx/make_sfx.py`
    - `<sm>/materials/sfx/README.md` に、使った Python と numpy の版と、この呼び方を書く（何年後でも同じ音を作り直せるようにするため）。
-   - 回だけの音は `<sm>/materials/sfx/sfx_<回のid>.py` に書く。自分のフォルダを `sys.path` に足してから `make_sfx` を import し、同じフォルダへ `<回のid>_<名前>.wav` を書き出す。`make_sfx.py` の写しは書き換えない。
+   - 回だけの音は `<sm>/materials/sfx/sfx_<回のid>.py` に書く。自分のフォルダを `sys.path` に足してから `make_sfx` を import し、同じフォルダへ `<回のid>_<名前>.wav` を書き出す。`make_sfx.py` の写しは書き換えない。流すときは README の版で `uv run --no-project --python 3.12 --with numpy==2.5.4 python -I <sm>/materials/sfx/sfx_<回のid>.py`。README の「回だけの音」に、そのファイル名を1行足す。
 4. 回を組み立てる。`<plugin>/references/video-template/` を `<sm>/videos/<回のid>/` へ写し、詳しいコンテのとおりに `script.ts`（`meta`・場面の表・製品名と URL）と `index.tsx`（場面ごとの `<Sequence>`・絵・動き・`SFX` の表）を書く。
    - 土台の部品は `../../components/`、色は `../../theme` から読む。回だけの部品は回のフォルダに置く。
    - 製品全体で効かせたい部品の直しは `<sm>/videos/_shared/` に写して直す（`../theme` を `../../theme` に書き換える）。
@@ -40,7 +40,7 @@ argument-hint: <回のid>
 
 ## 最後に表示すること
 
-作ったもの・決めたこと・人間に確かめてほしいことを短くまとめ、最後に次の2行を表示して止まる。人間の評価を待ち、勝手に次の工程へ進まない。
+作ったもの・決めたこと・人間に確かめてほしいことを短くまとめ、最後に次の2行を表示して止まる。`<…>` は実際の値（回の id など）に置き換えて表示する。人間の評価を待ち、勝手に次の工程へ進まない。
 
 ```
 ---

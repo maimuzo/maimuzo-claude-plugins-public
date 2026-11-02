@@ -24,4 +24,6 @@ cat >> "$WS/remotion.config.ts" <<'CFG'
 Config.overrideWebpackConfig((c) => ({ ...c, resolve: { ...c.resolve, symlinks: false } }));
 CFG
 cd "$WS"
-exec npx remotion studio src/index.ts
+# Studio を閉じたら作業場所を消す（残すと、古い版の engine を使用中とみなして消せなくなるため）
+trap 'cd /; rm -rf -- "$WS"' EXIT
+npx remotion studio src/index.ts

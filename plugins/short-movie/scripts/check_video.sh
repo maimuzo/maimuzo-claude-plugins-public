@@ -5,7 +5,8 @@
 set -euo pipefail
 [ $# -eq 2 ] || { echo "使い方: check_video.sh <mp4> <尺の秒>" >&2; exit 2; }
 MP4="$1"; DUR="$2"
-want_frames="$(python3 -I -c 'import sys;print(round(float(sys.argv[1])*30))' "$DUR")"
+# Root の Math.round と同じく .5 は上へ丸める
+want_frames="$(python3 -I -c 'import math,sys;print(math.floor(float(sys.argv[1])*30+0.5))' "$DUR")"
 v="$(ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,r_frame_rate,nb_read_frames -of csv=p=0 "$MP4")"
 a="$(ffprobe -v error -select_streams a -show_entries stream=codec_type -of csv=p=0 "$MP4")"
 echo "映像: ${v}（期待 1080,1080,30/1,${want_frames}）"

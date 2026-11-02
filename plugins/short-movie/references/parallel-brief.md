@@ -16,10 +16,10 @@
 - 人間の指摘: `<plugin>/references/lessons.md`。直すときは、人間の指摘の原文も下に添える。食い違って見えたら原文を優先して報告する。
 
 ## 手順
-1. 詳しいコンテ `<short_movie>/storyboards/<回のid>.md` を読む（無ければ書く）
+1. 詳しいコンテ `<short_movie>/storyboards/<回のid>.md` を読む（無ければ、作らずに止まって報告する。人間が確認していないコンテで作らないため）
 2. 要る絵を揃える。既存の絵を使い、無ければ `<plugin>/scripts/draw_codex.sh` で描いて `<plugin>/scripts/cutout.py` で抜く（`<plugin>/references/drawing.md`）
 3. `<short_movie>/videos/<回のid>/` に `script.ts` と `index.tsx` を書く（雛形は `<plugin>/references/video-template/`）
-4. 効果音を `SFX` の表で鳴らす。新しい音は `<short_movie>/materials/sfx/sfx_<回のid>.py` で合成する（`make_sfx.py` の写しは書き換えない）
+4. 効果音を `SFX` の表で鳴らす。新しい音は `<short_movie>/materials/sfx/sfx_<回のid>.py` で合成する（`make_sfx.py` の写しは書き換えない）。流し方は `<short_movie>/materials/sfx/README.md` の版で `uv run --no-project --python <版> --with numpy==<版> python -I <short_movie>/materials/sfx/sfx_<回のid>.py`
 5. `<plugin>/scripts/render.sh <short_movie> <回のid>` で書き出す（Bash の時間は最大にする）。型・形・音の鳴り始めの確かめとコマ割りの一覧が出る
 6. コマ割りの一覧 `<short_movie>/out/<回のid>_contact.png` を自分で見て直す（`<plugin>/references/checks.md`）
 
@@ -28,6 +28,8 @@
 - `<short_movie>/materials/prompts/` と `<short_movie>/materials/raw/` の、`<回のid>__` で始まる名前のもの
 - `<short_movie>/materials/sfx/sfx_<回のid>.py` と `<short_movie>/materials/sfx/<回のid>_*.wav`
 - `<short_movie>/out/<回のid>.mp4` と `<short_movie>/out/<回のid>_*`
+- `<short_movie>/out/review/codex_*.log`（`draw_codex.sh` が書く作業の記録）
+- `<short_movie>/materials/sfx/README.md` の「回だけの音」への1行の追記（ほかの行は書き換えない）
 
 `videos/_shared/`・`materials/sfx/make_sfx.py`・ほかの回・`theme.json`・設定画は読むだけ。共通の直しが要るときは、自分では直さず報告する。
 

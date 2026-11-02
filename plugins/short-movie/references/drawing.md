@@ -36,7 +36,10 @@ Use the attached character sheet. Draw only the hero, waving one hand, front vie
 
 ## Codex で描く
 
-`<plugin>/scripts/draw_codex.sh <short_movie> <依頼文のファイル> <保存先> [設定画...]` で1枚ずつ描かせる。
+`<plugin>/scripts/draw_codex.sh <short_movie> <依頼書.md> <絵の id> <保存先> [設定画...]` で1枚ずつ描かせる。依頼書の `## <番号>. <絵の id>` の節の ``` の中の依頼文だけが Codex に渡る。保存先と設定画は short_movie からの相対パスで書く。
+
+- 保存先に前の絵があれば、描かせる前に退け、描けなかったときは戻す。
+- 作業の記録は `short_movie/out/review/codex_<日時>_<pid>.log` に書く。
 
 - 1枚に数分かかる（測った例: 83〜353秒、平均155秒）。Bash の時間を最大（600000 ミリ秒）にして叩く。
 - 終了コード 4 は利用枠切れ。そこで止め、人間に「待つか、Nano Banana へ回すか」を訊く。利用枠の残りは調べない。

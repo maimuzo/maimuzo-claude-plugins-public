@@ -15,7 +15,7 @@ description: This skill should be used when the user asks to "make the remaining
 
 ## 前の工程の確かめ
 
-人間が完成と認めた最初の1本（`<sm>/videos/<回のid>/` と `<sm>/out/<回のid>.mp4`）が無ければ、何もせずに「先に /short-movie:first-video を実行してください」と表示して止まる。
+最初の1本の回のフォルダ（`<sm>/videos/<回のid>/`）が無いか、人間がその1本を完成と認めたことが会話から読み取れなければ、何もせずに「先に /short-movie:first-video を実行してください」と表示して止まる。
 
 ## 手順
 

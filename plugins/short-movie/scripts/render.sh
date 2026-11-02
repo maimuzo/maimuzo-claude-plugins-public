@@ -19,11 +19,17 @@ python3 -I - "$SM/videos/$ID" "$ID" <<'PY'
 import re, sys
 d, id_ = sys.argv[1], sys.argv[2]
 src = open(d + "/script.ts", encoding="utf-8").read()
-m_id = re.search(r'\bid:\s*"([^"]+)"', src)
-m_dur = re.search(r"durationInSeconds:\s*([0-9.]+)", src)
-tos = [float(x) for x in re.findall(r"\bto:\s*([0-9.]+)", src)]
+# meta は「export const meta = { … }」の中だけ、場面の秒は「scenes: [ … ]」の中だけを見る
+m_meta = re.search(r"export\s+const\s+meta\s*=\s*\{(.*?)\}", src, flags=re.S)
+if not m_meta:
+    sys.exit("script.ts に export const meta = { id, durationInSeconds } が見つかりません（雛形は references/video-template/script.ts）")
+meta = m_meta.group(1)
+m_id = re.search(r"\bid:\s*[\"']([^\"']+)[\"']", meta)
+m_dur = re.search(r"durationInSeconds:\s*([0-9.]+)", meta)
 if not m_id or not m_dur:
-    sys.exit("script.ts に meta（id と durationInSeconds）が見つかりません")
+    sys.exit("meta に id と durationInSeconds がありません")
+m_scenes = re.search(r"scenes:\s*\[(.*?)\]\s*,?\s*\}", src, flags=re.S)
+tos = [float(x) for x in re.findall(r"\bto:\s*([0-9.]+)", m_scenes.group(1))] if m_scenes else []
 if m_id.group(1) != id_:
     sys.exit(f"meta.id（{m_id.group(1)}）が回のフォルダ名（{id_}）と違います")
 dur = float(m_dur.group(1))
@@ -32,7 +38,7 @@ if not 15 <= dur <= 30:
 if tos and max(tos) != dur:
     sys.exit(f"最後の場面の終わり（{max(tos)} 秒）が meta の尺（{dur} 秒）と違います")
 PY
-DUR="$(python3 -I -c 'import re,sys;print(re.search(r"durationInSeconds:\s*([0-9.]+)",open(sys.argv[1],encoding="utf-8").read()).group(1))' "$SM/videos/$ID/script.ts")"
+DUR="$(python3 -I -c 'import re,sys;s=open(sys.argv[1],encoding="utf-8").read();m=re.search(r"export\s+const\s+meta\s*=\s*\{(.*?)\}",s,flags=re.S);print(re.search(r"durationInSeconds:\s*([0-9.]+)",m.group(1)).group(1))' "$SM/videos/$ID/script.ts")"
 
 ENGINE="$("$SM_PLUGIN_DIR/scripts/prepare_engine.sh" | tail -n 1)"
 sm_make_workspace "$SM" "$ID" render "$ENGINE"
@@ -45,9 +51,15 @@ mkdir -p "$SM/out"
 OUT="$SM/out/$ID.mp4"
 npx remotion render src/index.ts "$ID" "$OUT"
 
-"$SM_PLUGIN_DIR/scripts/check_video.sh" "$OUT" "$DUR"
+# 形の確かめが落ちても、直すためのコマ割りの一覧は作ってから終了コードを返す
+check=0
+"$SM_PLUGIN_DIR/scripts/check_video.sh" "$OUT" "$DUR" || check=$?
 uv run --no-project --with pillow python -I "$SM_PLUGIN_DIR/scripts/contact_sheet.py" "$OUT" "$SM/out/${ID}_contact.png"
 
 cd /
 rm -rf -- "$WS"
+if [ "$check" -ne 0 ]; then
+  echo "書き出しましたが、形の確かめが通りませんでした: $OUT" >&2
+  exit "$check"
+fi
 echo "書き出しました: $OUT"
