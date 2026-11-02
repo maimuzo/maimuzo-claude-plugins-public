@@ -1,0 +1,8 @@
+{
+  "name": "short-movie",
+  "version": "0.1.0",
+  "description": "製品の特徴を1つ伝える15〜30秒の紹介動画を、コンテ・キャラクター・絵コンテ・動画の順に、人間の確認を挟みながら Remotion と Codex（または Nano Banana）で作る",
+  "author": { "name": "maimuzo" },
+  "license": "MIT",
+  "keywords": ["video", "remotion", "storyboard", "codex"]
+}
