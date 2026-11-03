@@ -16,6 +16,11 @@ export const EndCard: React.FC<{
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const slam = spring({ frame, fps, config: { damping: 8, stiffness: 260 } });
+  // 字の大きさは字数から決め、画面の幅（両端に余白を残して 960px）に収める。
+  // 「ドン」と置くときの拡大も、最初のコマから画面に収まる倍率までにする
+  const chars = Math.max(1, Array.from(text).length);
+  const fontSize = Math.min(150, Math.floor(960 / chars));
+  const slamFrom = Math.min(1.5, 1040 / (fontSize * chars));
   const hop = spring({ frame: frame - 8, fps, config: { damping: 6, stiffness: 160 } });
   return (
     <div style={{ position: "absolute", inset: 0, background: theme.color.endBackground }}>
@@ -27,9 +32,10 @@ export const EndCard: React.FC<{
           textAlign: "center",
           fontFamily: theme.fontFamily,
           fontWeight: 800,
-          fontSize: 150,
+          fontSize,
+          whiteSpace: "nowrap",
           color: theme.color.ink,
-          transform: `scale(${interpolate(slam, [0, 1], [1.5, 1])})`,
+          transform: `scale(${interpolate(slam, [0, 1], [slamFrom, 1])})`,
         }}
       >
         {text}
