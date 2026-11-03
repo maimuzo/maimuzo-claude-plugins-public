@@ -27,7 +27,7 @@ argument-hint: "[回のid ...]（省略すると concept.md の全部の回）"
 3. 代表的な場面の絵（絵コンテ）を描かせる。本編の場面ごとに1枚、場面全体の不透明な絵として描く。
    - 依頼文を `<sm>/materials/prompts/<回のid>__storyboard.md` に書く。設定画を添付し、絵柄は設定画と同じ平らな塗りで簡素に。
    - `bash <plugin>/scripts/draw_codex.sh <sm> <sm>/materials/prompts/<回のid>__storyboard.md <回のid>/<秒> materials/storyboards/<回のid>/<秒>.png materials/ref/<役>.png` で1枚ずつ描かせる（依頼書の `## <番号>. <回のid>/<秒>` の節を渡す。Bash の時間は最大）。
-   - 枠が切れたら、人間に「待つか、Nano Banana へ回すか」を訊いて止まる。
+   - 枠が切れたら、人間に「待つか、Nano Banana へ回すか」を訊いて止まる。Nano Banana へ回すときは、依頼書をそのまま人間に渡し（絵コンテは場面全体の絵なので、背景の指定を替えない）、保存されたら `python3 -I <plugin>/scripts/ingest.py <sm> <依頼書> --to materials/storyboards` で受け取る。
 4. 絵コンテとコンテを突き合わせる。話の因果が絵で追えるか、同じキャラクターが別の役に見えないか、混みすぎていないかを見る。作業の文脈を持たない subagent にも、絵コンテとコンテだけを渡して見させる。
 5. 回ごとの絵コンテを並べた一覧を `<sm>/out/review/storyboards_<回のid>.png` に作り、人間に見せて止まる。
 

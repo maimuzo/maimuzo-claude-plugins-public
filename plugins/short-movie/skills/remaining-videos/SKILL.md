@@ -1,5 +1,6 @@
 ---
 name: remaining-videos
+argument-hint: <人間が完成と認めた最初の1本の回のid>
 description: This skill should be used when the user asks to "make the remaining videos", "残りの動画を作る", "他の動画を並行で作る", "全部まとめて直す", or runs /short-movie:remaining-videos after the first video is approved. It builds the remaining videos in parallel with one subagent per video, renders them all, and applies the human's feedback to all of them at once.
 ---
 
@@ -15,7 +16,10 @@ description: This skill should be used when the user asks to "make the remaining
 
 ## 前の工程の確かめ
 
-最初の1本の回のフォルダ（`<sm>/videos/<回のid>/`）が無いか、人間がその1本を完成と認めたことが会話から読み取れなければ、何もせずに「先に /short-movie:first-video を実行してください」と表示して止まる。
+引数の回の id が、人間が完成と認めた最初の1本（お手本）になる。人間がこのスキルを引数付きで実行したことを、その1本の了承とみなす（会話の記憶には頼らない。セッションを開き直しても進めるため）。
+
+- 引数が無ければ、`<sm>/concept.md` の回の一覧と `<sm>/videos/` を見て、動画のある回を挙げ、「お手本にする回の id を付けて実行してください（例: /short-movie:remaining-videos <回のid>）」と表示して止まる。
+- `<sm>/videos/<回のid>/` が無ければ、何もせずに「先に /short-movie:first-video <回のid> を実行してください」と表示して止まる。
 
 ## 手順
 
@@ -24,7 +28,7 @@ description: This skill should be used when the user asks to "make the remaining
    - `bash <plugin>/scripts/prepare_engine.sh` を1回叩く（engine の準備を並行で取り合わないため）。
    - 回をまたいで使うキャラクターのポーズ・背景・小物で、まだ無いものを先に描いて置く。
    - 詳しいコンテと絵コンテが無い回があれば、先に /short-movie:storyboard を案内して止まる（前の工程が固まる前に次を作らない）。
-3. 回ごとに1つの subagent を立てる。依頼文は `<plugin>/references/parallel-brief.md` の雛形を埋めたもの。`<plugin>` と `<sm>` は絶対パスで書く（subagent には base directory が示されない）。
+3. 回ごとに1つの subagent を立てる。依頼文は `<plugin>/references/parallel-brief.md` の雛形を埋めたもの（`<最初の回のid>` は引数の回の id）。`<plugin>` と `<sm>` は絶対パスで書く（subagent には base directory が示されない）。
 4. 全部が終わったら、全部の回を `render.sh` で書き出し直し、コマ割りの一覧を並べて見比べる（回をまたいでキャラクター・色・字幕の位置がそろっているか）。
 5. 人間に全部の mp4 を見てもらう。
 

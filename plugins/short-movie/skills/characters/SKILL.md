@@ -24,7 +24,7 @@ description: This skill should be used when the user asks to "design the charact
    - 製品やツールを擬人化するときは、既存のマスコットやロゴに似せない。
    - 似た形の役を並べるときは、色で見分けられるようにし、名前の札を頭の上に出す前提にする。
 3. 絵柄の候補を描かせる。依頼文を `<sm>/materials/prompts/style_candidates.md` に書き、絵柄の違う案を2〜3案、Codex で1案ずつ描かせる（`bash <plugin>/scripts/draw_codex.sh <sm> <sm>/materials/prompts/style_candidates.md style_candidates/<案> materials/raw/style_candidates/<案>.png`。依頼書の中の `## <番号>. style_candidates/<案>` の節の依頼文だけが渡る。Bash の時間は最大にする）。
-   - Codex が無い、または枠が切れた（終了コード 4）ときは、人間に「待つか、Nano Banana へ回すか」を訊いて止まる。Nano Banana へ回すときは、依頼書を人間に渡し、保存されたら `ingest.py` で受け取る。
+   - Codex が無い、または枠が切れた（終了コード 4）ときは、人間に「待つか、Nano Banana へ回すか」を訊いて止まる。Nano Banana へ回すときは、`to_nanobanana.py` で背景の指定を緑一色に替えた写しを作って人間に渡し、保存されたら `ingest.py` で受け取る（`references/drawing.md`）。
 4. 候補を1枚の比較画像に並べ（Pillow で横に並べる。`<sm>/out/review/style_candidates.png`）、人間に選んでもらう。ここで止まる。
 5. 人間が選んだら、その絵柄で役ごとの設定画を描かせる。設定画は、1枚の絵に正面・横・後ろの3つを並べたもの。描かせたままの絵は `<sm>/materials/raw/ref/<役>.png` に残し、`cutout.py` で背景を抜いて `<sm>/materials/ref/<役>.png` に置く。設定画は以後、毎回添付する正の絵になる。
 

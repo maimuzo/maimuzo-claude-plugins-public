@@ -45,5 +45,5 @@ argument-hint: <回のid>
 ```
 ---
 直すとき: 直したい内容をそのまま書いてください。このスキルの続きで直します
-この内容でよいときは次のスキルを実行してください: /short-movie:remaining-videos
+この内容でよいときは次のスキルを実行してください: /short-movie:remaining-videos <この回のid>
 ```

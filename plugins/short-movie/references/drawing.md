@@ -47,10 +47,10 @@ Use the attached character sheet. Draw only the hero, waving one hand, front vie
 
 ## Nano Banana で描く（人間がする）
 
-1. 依頼書を人間に渡す。
+1. `python3 -I <plugin>/scripts/to_nanobanana.py <依頼書>` で、背景の指定を緑一色に替えた写し（`<名前>__nanobanana.md`）を作り、それを人間に渡す。元の依頼書（Codex 向け）は書き換えない。
 2. 人間が Gemini アプリで新しいチャットを開き、依頼書の冒頭の設定画を添付する。
 3. 依頼文を上から順に1つずつ貼り、出た画像を1枚ずつ `short_movie/inbox/` へ保存する（ファイル名は変えなくてよい）。
-4. 人間が「保存した」と伝えたら、`python3 -I <plugin>/scripts/ingest.py <short_movie> <依頼書>` で、保存の順と依頼書の順を突き合わせて `materials/raw/` へ移す。
+4. 人間が「保存した」と伝えたら、`python3 -I <plugin>/scripts/ingest.py <short_movie> <依頼書>` で、保存の順と依頼書の順を突き合わせて `materials/raw/` へ移す。絵コンテの依頼書のときは `--to materials/storyboards` を付け、`materials/storyboards/<回のid>/<秒>.png` へ移す（first-video はそこを見る）。
 
 - 最初に1回だけ、Gemini アプリの設定で「Media watermark」を Off にしてもらう。
 - 1日に描ける枚数は公表されていない。1つの依頼書は10枚以内にする。
