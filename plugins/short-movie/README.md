@@ -24,7 +24,7 @@
 | 3 | `/short-movie:characters` | キャラクター設定と設定画を作る | 絵柄とキャラクター |
 | 4 | `/short-movie:storyboard [回のid...]` | 回ごとの詳しいコンテと、代表シーンの絵コンテを作る | 絵コンテ |
 | 5 | `/short-movie:first-video <回のid>` | 1本を動画にして、細部を調整する | 最初の1本 |
-| 6 | `/short-movie:remaining-videos` | 残りを並行で作り、全部まとめて直す | 残りの全部 |
+| 6 | `/short-movie:remaining-videos <最初の1本の回のid>` | 残りを並行で作り、全部まとめて直す | 残りの全部 |
 
 各スキルは最後に、直すときの書き方と、次に実行するスキルを表示して止まります。
 公開（release・README への掲載・投稿）は範囲外で、ローカルに mp4 を書き出すところまでです。
