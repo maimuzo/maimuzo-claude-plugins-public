@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "maimuzo-public",
+  "owner": {
+    "name": "maimuzo"
+  },
+  "metadata": {
+    "description": "maimuzo の、公開している Claude Code のプラグイン"
+  },
+  "plugins": [
+    {
+      "name": "short-movie",
+      "source": "./plugins/short-movie",
+      "description": "製品の特徴を1つ伝える15〜30秒の紹介動画を、人間の確認を挟みながら作る"
+    }
+  ]
+}
